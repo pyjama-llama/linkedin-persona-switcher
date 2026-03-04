@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, ArrowRight, BarChart3, Briefcase, Palette, Cpu, CheckCircle, TrendingUp, FileText, Image as ImageIcon, Code, PieChart, Target, Brush, Terminal, Database, Rocket, Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ArrowLeft, ArrowRight, BarChart3, Briefcase, Palette, Cpu, CheckCircle2, TrendingUp, FileText, Image as ImageIcon, Code, PieChart, Target, Brush, Terminal, Database, Rocket, Sparkles, Check } from 'lucide-react'
 import { personas, QuizQuestion } from '@/lib/dummy-data-fixed'
 
 const quizQuestions: QuizQuestion[] = [
@@ -56,7 +55,7 @@ const quizQuestions: QuizQuestion[] = [
   },
   {
     id: 'q4',
-    question: 'What\'s your ideal work environment?',
+    question: "What's your ideal work environment?",
     options: [
       { id: 'a', text: 'Data-driven organization focused on metrics and insights', icon: 'Database' },
       { id: 'b', text: 'Strategic leadership role with growth responsibilities', icon: 'TrendingUp' },
@@ -85,45 +84,43 @@ interface PersonaQuizResults {
 
 export function PersonaQuiz({ onNext, onBack }: PersonaQuizProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [selectedOption, setSelectedOption] = useState<string>('')
+  const [answers, setAnswers] = useState<Record<string, string[]>>({})
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [isAnimating, setIsAnimating] = useState(false)
 
   const question = quizQuestions[currentQuestion]
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100
 
-  const handleOptionSelect = (optionId: string) => {
-    setSelectedOption(optionId)
-    setAnswers(prev => ({
-      ...prev,
-      [question.id]: optionId
-    }))
+  const toggleOption = (optionId: string) => {
+    setSelectedOptions(prev => {
+      const next = prev.includes(optionId)
+        ? prev.filter(id => id !== optionId)
+        : [...prev, optionId]
+      setAnswers(a => ({ ...a, [question.id]: next }))
+      return next
+    })
   }
 
   const handleNext = () => {
-    if (!selectedOption) return
-
+    if (selectedOptions.length === 0) return
     if (currentQuestion < quizQuestions.length - 1) {
       setIsAnimating(true)
       setTimeout(() => {
         setCurrentQuestion(prev => prev + 1)
-        setSelectedOption('')
+        setSelectedOptions(answers[quizQuestions[currentQuestion + 1]?.id] || [])
         setIsAnimating(false)
-      }, 300)
+      }, 250)
     } else {
-      // Calculate results
-      const results = calculateResults()
       setIsAnimating(true)
-      setTimeout(() => {
-        onNext(results)
-      }, 300)
+      setTimeout(() => onNext(calculateResults()), 250)
     }
   }
 
   const handleBack = () => {
     if (currentQuestion > 0) {
+      const prevQ = quizQuestions[currentQuestion - 1]
       setCurrentQuestion(prev => prev - 1)
-      setSelectedOption(answers[quizQuestions[currentQuestion - 1].id] || '')
+      setSelectedOptions(answers[prevQ.id] || [])
     } else {
       onBack()
     }
@@ -131,181 +128,121 @@ export function PersonaQuiz({ onNext, onBack }: PersonaQuizProps) {
 
   const calculateResults = (): PersonaQuizResults => {
     const scores: Record<string, number> = {
-      'data-viz': 0,
-      'business-strategy': 0,
-      'creative-design': 0,
-      'tech-innovation': 0
+      'data-viz': 0, 'business-strategy': 0, 'creative-design': 0, 'tech-innovation': 0
     }
-
-    // Calculate scores based on answers
-    Object.entries(answers).forEach(([questionId, answerId]) => {
-      const question = quizQuestions.find(q => q.id === questionId)
-      if (question) {
-        Object.entries(question.personaWeights).forEach(([persona, weights]) => {
+    Object.entries(answers).forEach(([questionId, selectedIds]) => {
+      const q = quizQuestions.find(q => q.id === questionId)
+      if (!q) return
+      selectedIds.forEach(answerId => {
+        Object.entries(q.personaWeights).forEach(([persona, weights]) => {
           if (typeof weights === 'object' && answerId in weights) {
             scores[persona] += weights[answerId]
           }
         })
-      }
+      })
     })
-
-    // Find primary and secondary personas
-    const sortedPersonas = Object.entries(scores)
-      .sort(([, a], [, b]) => b - a)
-      .map(([persona]) => persona)
-
-    return {
-      scores,
-      primaryPersona: sortedPersonas[0],
-      secondaryPersona: sortedPersonas[1] !== sortedPersonas[0] ? sortedPersonas[1] : undefined
-    }
+    const sorted = Object.entries(scores).sort(([, a], [, b]) => b - a).map(([p]) => p)
+    return { scores, primaryPersona: sorted[0], secondaryPersona: sorted[1] }
   }
 
   const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'BarChart3': return <BarChart3 className="w-6 h-6" />
-      case 'Briefcase': return <Briefcase className="w-6 h-6" />
-      case 'Palette': return <Palette className="w-6 h-6" />
-      case 'Cpu': return <Cpu className="w-6 h-6" />
-      case 'TrendingUp': return <TrendingUp className="w-6 h-6" />
-      case 'FileText': return <FileText className="w-6 h-6" />
-      case 'ImageIcon': return <ImageIcon className="w-6 h-6" />
-      case 'Code': return <Code className="w-6 h-6" />
-      case 'PieChart': return <PieChart className="w-6 h-6" />
-      case 'Target': return <Target className="w-6 h-6" />
-      case 'Brush': return <Brush className="w-6 h-6" />
-      case 'Terminal': return <Terminal className="w-6 h-6" />
-      case 'Database': return <Database className="w-6 h-6" />
-      case 'Rocket': return <Rocket className="w-6 h-6" />
-      case 'Sparkles': return <Sparkles className="w-6 h-6" />
-      default: return <BarChart3 className="w-6 h-6" />
+    const cls = "w-5 h-5"
+    const map: Record<string, React.ReactNode> = {
+      BarChart3: <BarChart3 className={cls} />, Briefcase: <Briefcase className={cls} />,
+      Palette: <Palette className={cls} />, Cpu: <Cpu className={cls} />,
+      TrendingUp: <TrendingUp className={cls} />, FileText: <FileText className={cls} />,
+      ImageIcon: <ImageIcon className={cls} />, Code: <Code className={cls} />,
+      PieChart: <PieChart className={cls} />, Target: <Target className={cls} />,
+      Brush: <Brush className={cls} />, Terminal: <Terminal className={cls} />,
+      Database: <Database className={cls} />, Rocket: <Rocket className={cls} />,
+      Sparkles: <Sparkles className={cls} />,
     }
+    return map[iconName] ?? <BarChart3 className={cls} />
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4 font-sans">
-      <div className="max-w-3xl w-full">
-        {/* Progress Bar */}
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="max-w-2xl w-full">
+
+        {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl font-sans font-bold text-gray-900 mb-6">
-              Discover Your Professional Personas
-            </h2>
-            <p className="text-sm font-sans text-gray-500 mb-8">
-              Question {currentQuestion + 1} of {quizQuestions.length}
-            </p>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-2xl font-bold text-foreground">Discover Your Professional Personas</h2>
+            <span className="text-sm font-medium text-muted-foreground">
+              {currentQuestion + 1} / {quizQuestions.length}
+            </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 h-3 rounded-full transition-all duration-500"
+          <div className="w-full bg-muted rounded-full h-2">
+            <div
+              className="bg-[#0a66c2] h-2 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
+          <p className="text-sm text-muted-foreground mt-2">Select all that apply — you can wear multiple hats</p>
         </div>
 
         {/* Question Card */}
-        <div className={`bg-white rounded-2xl shadow-xl border border-gray-100 p-8 transition-all duration-300 ${
-          isAnimating ? 'scale-95 opacity-75' : 'scale-100 opacity-100'
-        }`}>
-          <div className="mb-8">
-            <h3 className="text-lg font-sans font-semibold text-gray-900 mb-4">
-              {question.question}
-            </h3>
-            <p className="font-sans text-gray-600 mb-8">
-              Answer 4 quick questions to help us understand your professional context and preferences.
-            </p>
-          </div>
+        <div className={`bg-card border border-border rounded-2xl shadow-sm p-8 transition-all duration-250 ${isAnimating ? 'scale-98 opacity-60' : 'scale-100 opacity-100'
+          }`}>
+          <h3 className="text-lg font-semibold text-foreground mb-6">{question.question}</h3>
 
-          {/* Options */}
-          <div className="grid gap-4 mb-8">
-            {question.options.map((option) => (
-              <button
-                key={option.id}
-                onClick={() => handleOptionSelect(option.id)}
-                className={`p-6 rounded-xl border-2 transition-all duration-200 text-left ${
-                  selectedOption === option.id
-                    ? 'border-blue-500 bg-blue-50 shadow-lg'
-                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                }`}
-              >
-                <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                    selectedOption === option.id
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
+          <div className="grid gap-3 mb-8">
+            {question.options.map((option) => {
+              const isSelected = selectedOptions.includes(option.id)
+              return (
+                <button
+                  key={option.id}
+                  onClick={() => toggleOption(option.id)}
+                  className={`p-4 rounded-xl border-2 transition-all duration-150 text-left flex items-center gap-4 ${isSelected
+                      ? 'border-[#0a66c2] bg-blue-500/8'
+                      : 'border-border hover:border-muted-foreground/40 hover:bg-muted/40'
+                    }`}
+                >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'bg-[#0a66c2] text-white' : 'bg-muted text-muted-foreground'
+                    }`}>
                     {option.icon && getIcon(option.icon)}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-lg font-sans font-medium text-gray-900">
-                      {option.text}
-                    </p>
+                  <p className="flex-1 text-base font-medium text-foreground">{option.text}</p>
+                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'bg-[#0a66c2] border-[#0a66c2]' : 'border-border'
+                    }`}>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
                   </div>
-                  {selectedOption === option.id && (
-                    <CheckCircle className="w-6 h-6 text-blue-600" />
-                  )}
-                </div>
-              </button>
-            ))}
+                </button>
+              )
+            })}
           </div>
 
           {/* Navigation */}
           <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
+            <button
               onClick={handleBack}
-              className="px-6"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4" />
               Back
-            </Button>
+            </button>
 
-            <Button
+            <button
               onClick={handleNext}
-              disabled={!selectedOption}
-              size="lg"
-              className="px-8"
+              disabled={selectedOptions.length === 0}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${selectedOptions.length === 0
+                  ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                  : 'bg-[#0a66c2] hover:bg-[#0055a4] text-white shadow-sm'
+                }`}
             >
-              {currentQuestion === quizQuestions.length - 1 ? 'See Results' : 'Next'}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+              {currentQuestion === quizQuestions.length - 1 ? 'See My Personas' : 'Next question'}
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Persona Preview */}
-        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {personas.map((persona) => (
-            <div
-              key={persona.id}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
-                selectedOption && 
-                question.personaWeights[persona.id] && 
-                typeof question.personaWeights[persona.id] === 'object' &&
-                question.personaWeights[persona.id][selectedOption] > 0
-                  ? 'border-blue-200 bg-blue-50'
-                  : 'border-gray-100 bg-white'
-              }`}
-            >
-              <div className="flex items-center space-x-2 mb-2">
-                <div 
-                  className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: persona.color }}
-                >
-                  {getIcon(persona.icon)}
-                </div>
-                <span className="font-sans text-gray-900">{persona.name}</span>
-              </div>
-              {selectedOption && 
-                question.personaWeights[persona.id] && 
-                typeof question.personaWeights[persona.id] === 'object' &&
-                question.personaWeights[persona.id][selectedOption] > 0 && (
-                <div className="text-xs text-blue-600">
-                  +{question.personaWeights[persona.id][selectedOption]} points
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        {/* Hint */}
+        {selectedOptions.length > 1 && (
+          <div className="mt-4 flex items-center gap-2 text-sm text-[#0a66c2]">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>{selectedOptions.length} selected — you'll get multiple personas</span>
+          </div>
+        )}
       </div>
     </div>
   )
