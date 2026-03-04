@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #f3f2ef;
+    --foreground: #1d1d1d;
+    --card: #ffffff;
+    --card-foreground: #1d1d1d;
+    --popover: #ffffff;
+    --popover-foreground: #1d1d1d;
+    --primary: #0a66c2;
+    --primary-foreground: #ffffff;
+    --secondary: #e8e8e3;
+    --secondary-foreground: #1d1d1d;
+    --muted: #eae8e3;
+    --muted-foreground: #666666;
+    --accent: #0a66c2;
+    --accent-foreground: #ffffff;
+    --destructive: #cc1016;
+    --destructive-foreground: #ffffff;
+    --border: #e0deda;
+    --input: #ffffff;
+    --ring: #0a66c2;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #1b1f23;
+    --foreground: #e7e9ea;
+    --card: #22272e;
+    --card-foreground: #e7e9ea;
+    --popover: #22272e;
+    --popover-foreground: #e7e9ea;
+    --primary: #5b9bd5;
+    --primary-foreground: #ffffff;
+    --secondary: #2d333b;
+    --secondary-foreground: #e7e9ea;
+    --muted: #2d333b;
+    --muted-foreground: #8b949e;
+    --accent: #5b9bd5;
+    --accent-foreground: #ffffff;
+    --destructive: #f85149;
+    --destructive-foreground: #ffffff;
+    --border: #373e47;
+    --input: #2d333b;
+    --ring: #5b9bd5;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    font-size: 15px;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  p {
+    line-height: 1.6;
+  }
+}
