@@ -20,7 +20,7 @@ export function PlatformDemo({ onComplete, onBack, selectedPersonas }: PlatformD
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null)
 
   const currentPersonaData = personas.find(p => p.id === currentPersona)
-  const filteredPosts = posts.filter(post => 
+  const filteredPosts = posts.filter(post =>
     post.personaRelevance[currentPersona] >= 70
   )
   const currentPost = filteredPosts[currentPostIndex] || filteredPosts[0]
@@ -48,16 +48,16 @@ export function PlatformDemo({ onComplete, onBack, selectedPersonas }: PlatformD
   const startReading = (text: string) => {
     if ('speechSynthesis' in window) {
       stopReading()
-      
+
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.rate = 0.9
       utterance.pitch = 1
       utterance.volume = 1
-      
+
       utterance.onstart = () => setIsReading(true)
       utterance.onend = () => setIsReading(false)
       utterance.onerror = () => setIsReading(false)
-      
+
       speechRef.current = utterance
       window.speechSynthesis.speak(utterance)
     }
@@ -97,7 +97,7 @@ export function PlatformDemo({ onComplete, onBack, selectedPersonas }: PlatformD
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] font-sans">
+    <div className="min-h-screen bg-background font-sans">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -146,20 +146,17 @@ export function PlatformDemo({ onComplete, onBack, selectedPersonas }: PlatformD
                     <button
                       key={personaId}
                       onClick={() => handlePersonaSwitch(personaId)}
-                      className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
-                        currentPersona === personaId
-                          ? 'border-blue-500 bg-blue-50 shadow-md'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${currentPersona === personaId
+                        ? 'border-blue-500 bg-blue-50 shadow-md'
+                        : 'border-gray-200 hover:border-gray-300'
+                        }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <div 
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        <div
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-white"
                           style={{ backgroundColor: persona.color }}
                         >
-                          <li className="font-sans text-gray-700">
-                            <strong>Relevance Score:</strong> {Math.round(persona.relevance * 100)}%
-                          </li>
+                          {getIcon(persona.icon)}
                         </div>
                         <div className="flex-1">
                           <div className="font-medium text-gray-900">
@@ -186,7 +183,7 @@ export function PlatformDemo({ onComplete, onBack, selectedPersonas }: PlatformD
                   {currentPersonaData?.name}
                 </div>
                 <p className="font-sans text-sm text-gray-600 mb-4">
-                  Showing {filteredPosts.length} posts optimized for {currentPersonaData.name.toLowerCase()}
+                  Showing {filteredPosts.length} posts optimized for {currentPersonaData?.name?.toLowerCase()}
                 </p>
               </div>
             </div>
@@ -237,13 +234,12 @@ export function PlatformDemo({ onComplete, onBack, selectedPersonas }: PlatformD
               {/* Multiple Posts Feed */}
               <div className="space-y-4">
                 {filteredPosts.slice(0, 5).map((post, index) => (
-                  <div 
+                  <div
                     key={post.id}
-                    className={`bg-white rounded-xl shadow-lg border-2 transition-all duration-300 ${
-                      index === currentPostIndex 
-                        ? 'border-blue-500 shadow-xl scale-[1.02]' 
-                        : 'border-gray-100 hover:border-gray-300'
-                    }`}
+                    className={`bg-white rounded-xl shadow-lg border-2 transition-all duration-300 ${index === currentPostIndex
+                      ? 'border-blue-500 shadow-xl scale-[1.02]'
+                      : 'border-gray-100 hover:border-gray-300'
+                      }`}
                   >
                     <div className="p-6">
                       <div className="flex items-start space-x-4 mb-4">
@@ -280,33 +276,27 @@ export function PlatformDemo({ onComplete, onBack, selectedPersonas }: PlatformD
                         <div className="flex items-center space-x-4">
                           <button
                             onClick={() => toggleReading(post)}
-                            className={`flex items-center space-x-1 px-2 py-1 rounded transition-colors ${
-                              isReading 
-                                ? 'bg-red-100 text-red-600 hover:bg-red-200' 
-                                : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                            }`}
+                            className={`flex items-center space-x-1 px-2 py-1 rounded transition-colors ${isReading
+                              ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                              : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                              }`}
                           >
                             <Volume2 className="w-4 h-4" />
                             <span className="font-sans text-gray-600 text-sm">
-                              {post.author.full_name} • {post.timestamp}
+                              {post.author.name} • {post.timestamp}
                             </span>
                           </button>
                           <span className="flex items-center">
-                            <li className="font-sans text-gray-700">
-                              <strong>Engagement Rate:</strong> {((post.likes + post.comments + post.shares) / 3).toFixed(1)}x higher
-                            </li>
-                          </span>
-                          <span className="flex items-center">
                             <Heart className="w-4 h-4 mr-1" />
-                            {post.likes}
+                            {post.engagement.likes}
                           </span>
                           <span className="flex items-center">
                             <MessageCircle className="w-4 h-4 mr-1" />
-                            {post.comments}
+                            {post.engagement.comments}
                           </span>
                           <span className="flex items-center">
                             <Share2 className="w-4 h-4 mr-1" />
-                            {post.shares}
+                            {post.engagement.shares}
                           </span>
                         </div>
                       </div>
