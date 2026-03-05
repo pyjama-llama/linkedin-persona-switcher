@@ -16,12 +16,14 @@ export async function POST(req: NextRequest) {
         const voice = getVoiceForPersona(personaId)
 
         const apiKey = process.env.ELEVENLABS_API_KEY
+        console.log('[PODCAST ROUTE] API Key exists?', !!apiKey, 'Length:', apiKey?.length)
 
         // ── MOCK FALLBACK ──────────────────────────────────────────────────────
         // If no API key is set, return the script text as JSON.
         // The client-side PodcastPlayer will use the browser's SpeechSynthesis
         // API to read the script aloud — no pre-baked MP3 files needed.
         if (!apiKey) {
+            console.log('[PODCAST ROUTE] Falling back to browser speech synthesis (No API key found)')
             return NextResponse.json(
                 {
                     mock: true,
