@@ -34,6 +34,13 @@ export const personaTopics: Record<string, TrendingTopic[]> = {
         { topic: 'MLOps', trend: '+31%' },
         { topic: 'Open Source LLMs', trend: '+58%' },
     ],
+    'chief-of-staff': [
+        { topic: 'Operational Excellence', trend: '+84%' },
+        { topic: 'AI-First Marketing', trend: '+76%' },
+        { topic: 'Cross-Functional Alignment', trend: '+45%' },
+        { topic: 'Executive Advisory', trend: '+39%' },
+        { topic: 'Solutions Marketing', trend: '+52%' },
+    ],
 }
 
 export const defaultTopics: TrendingTopic[] = [

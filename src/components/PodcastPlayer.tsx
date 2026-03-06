@@ -96,6 +96,34 @@ export const PodcastPlayer = forwardRef<PodcastPlayerHandle, PodcastPlayerProps>
             // Cancel any ongoing SpeechSynthesis
             window.speechSynthesis?.cancel()
 
+            // ── STATIC OVERRIDE FOR CHIEF OF STAFF ──────────────────────────
+            if (personaId === 'chief-of-staff') {
+                setTitle('Chief of Staff Pitch - Victor & Sarah')
+                setVoiceName('Victor & Sarah')
+                setIsMock(false)
+                utteranceRef.current = null
+
+                // Look for the static m4a in the public folder
+                const url = '/audio/chief-of-staff-pitch.m4a'
+                const audio = new Audio(url)
+                audioRef.current = audio
+
+                audio.addEventListener('loadedmetadata', () => setDuration(audio.duration))
+                audio.addEventListener('timeupdate', () => setCurrentTime(audio.currentTime))
+                audio.addEventListener('ended', () => {
+                    setState('ready')
+                    setCurrentTime(0)
+                })
+                audio.addEventListener('error', (e) => {
+                    console.error('Missing MP3 file in /public/audio/:', e)
+                    setErrorKind('transient')
+                    setState('error')
+                })
+
+                setState('ready')
+                return
+            }
+
             try {
                 const res = await fetch('/api/podcast', {
                     method: 'POST',

@@ -53,6 +53,15 @@ export const PERSONA_VOICES: Record<string, PersonaVoice> = {
     similarityBoost: 0.75,
     style: 0,
   },
+  'chief-of-staff': {
+    // Sarah - Calm, professional, great for narration
+    voiceId: 'EXAVITQu4vr4xnSDxMaL', // Sarah pre-made voice ID
+    name: 'Sarah',
+    description: 'Professional, articulate female',
+    stability: 0.78,
+    similarityBoost: 0.75,
+    style: 0,
+  },
 }
 
 /** Fallback voice if persona not found */
