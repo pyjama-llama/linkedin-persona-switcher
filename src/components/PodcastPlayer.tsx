@@ -115,7 +115,7 @@ export const PodcastPlayer = forwardRef<PodcastPlayerHandle, PodcastPlayerProps>
                     setCurrentTime(0)
                 })
                 audio.addEventListener('error', (e) => {
-                    console.error('Missing MP3 file in /public/audio/:', e)
+                    console.error('Error loading audio file /audio/chief-of-staff-pitch.m4a:', e)
                     setErrorKind('transient')
                     setState('error')
                 })
