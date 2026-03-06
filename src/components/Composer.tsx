@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from './ui/button'
 import { Image, Video, Calendar, BarChart3, MoreHorizontal } from 'lucide-react'
+import { ImageModal } from './ImageModal'
 
 export function Composer() {
   const [content, setContent] = useState('')
@@ -19,8 +20,8 @@ export function Composer() {
   return (
     <div className="bg-card border rounded-lg p-4 mb-4">
       <div className="flex space-x-3">
-        <img 
-          src="/default-avatar.png" 
+        <ImageModal
+          src="/default-avatar.png"
           alt="Your avatar"
           className="w-10 h-10 rounded-full object-cover"
         />
@@ -67,8 +68,8 @@ export function Composer() {
               AI will automatically categorize your content for the right professional audience
             </div>
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={() => {
                   setContent('')
@@ -77,7 +78,7 @@ export function Composer() {
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleSubmit}
                 disabled={!content.trim()}
                 size="sm"

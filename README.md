@@ -44,6 +44,7 @@ Open [http://localhost:3000](http://localhost:3000)
 LinkedIn's feed algorithm is a black box — you can't tell it "I'm in analyst mode today, filter for data posts." This prototype makes context explicit and user-controlled. The personas system is the core thesis: professionals wear multiple hats, and their feed should reflect which hat they're wearing.
 
 **Built as a portfolio piece for a Chief of Staff application at LinkedIn Sales Solutions.**
+*(Includes a custom static audio override for the Chief of Staff persona—bypassing the Live API to play a curated two-person podcast exported from NotebookLM.)*
 
 ---
 

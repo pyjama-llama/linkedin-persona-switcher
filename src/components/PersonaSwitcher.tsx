@@ -1,13 +1,14 @@
 'use client'
 
 import { usePersonaStore } from '@/stores/personaStore'
-import { BarChart3, Briefcase, Palette, Cpu, CheckCircle2 } from 'lucide-react'
+import { BarChart3, Briefcase, Palette, Cpu, Rocket, CheckCircle2 } from 'lucide-react'
 
 const iconMap: Record<string, React.ElementType> = {
   BarChart3,
   Briefcase,
   Palette,
   Cpu,
+  Rocket,
 }
 
 export function PersonaSwitcher() {
@@ -29,8 +30,8 @@ export function PersonaSwitcher() {
               key={persona.id}
               onClick={() => setCurrentPersona(persona)}
               className={`w-full text-left p-3 rounded-lg transition-all duration-150 group ${isActive
-                  ? 'border border-transparent'
-                  : 'hover:bg-muted/60 border border-transparent'
+                ? 'border border-transparent'
+                : 'hover:bg-muted/60 border border-transparent'
                 }`}
               style={isActive ? {
                 backgroundColor: `${persona.color}18`,
